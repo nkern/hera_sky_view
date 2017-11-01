@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HERA Sky View</title>
+    <link rel='icon' href='static/hera_logo.png'>
+</head>
+<body>
+	<center>
+    <h2>HERA Sky View</h2>
+    <h3>site coordinates: -30.7215 degrees S, 21.4286 degrees E</h3>
+    <img src="data:image/png;base64, {{ plot_url }}" width=400px>
+    <br>
+    <h3>Specify a Julian Date:</h3>
+    <form action="." method="POST">
+        <input type='text' name='jd'>
+        <input type='submit'>
+    </form>
+    {{ footer_text }}
+	</center>
+</body>
+</html>
