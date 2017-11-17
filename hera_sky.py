@@ -3,6 +3,7 @@ hera_sky.py
 -----------
 
 Nicholas Kern
+nkern@berkeley.edu
 """
 from flask import Flask, make_response
 from flask import request
@@ -33,6 +34,9 @@ def make_image(jd=None, nu=None):
     # initialize sky models
     S = Sky_Model('pygsm_sky_models.npz', onepol=False)
 
+    # initialize beam models
+    B = Beam_Model('NF_HERA_beams.beamfits')
+
     # get image parameters
     if jd is None:
         date = loc.date.datetime()
@@ -43,9 +47,8 @@ def make_image(jd=None, nu=None):
 
     if nu is None:
         nu = 150.0
-        i = np.argmin(np.abs(S.sky_freqs - nu))
-    else:
-        i = np.argmin(np.abs(S.sky_freqs - nu))
+    i = np.argmin(np.abs(S.sky_freqs - nu))
+    j = np.argmin(np.abs(B.beam_freqs - nu))
 
     # get local time
     utc_date = '-'.join(map(str, date.utctimetuple()[:3]))
@@ -59,6 +62,7 @@ def make_image(jd=None, nu=None):
     fig = plt.figure(figsize=(5,5))
     ax = fig.add_subplot(111)
     S.plot_sky(loc, S.sky_models[0, 0, i], ax=ax, cbar=False)
+    B.plot_beam(B.beam_models[0, j], ax=ax, levels=[0.25, 0.5, 0.75, 0.99], plot_kwargs={'alpha': 0.8, 'colors': 'white', 'linewidths': 0.75})
     ax.set_title("{} MHz\nLST {:.2f} hours\nJD {:.4f}\nUTC {}".format(S.sky_freqs[i], loc.sidereal_time()*12/np.pi, jd, utc))
     plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
     plt.close()
